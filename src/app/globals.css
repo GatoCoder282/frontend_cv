@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+/* 1. Definimos las variables en la raíz (Estándar CSS puro) */
+:root {
+  --background: 10 10 10;       /* #0a0a0a en RGB */
+  --foreground: 237 237 237;    /* #ededed en RGB */
+  
+  --primary: 79 70 229;         /* #4f46e5 (Indigo) */
+  --secondary: 16 185 129;      /* #10b981 (Emerald) */
+  --muted: 161 161 170;
+}
+
+/* 2. Conectamos esas variables a Tailwind usando @theme */
+@theme {
+  /* Le decimos: "Usa mis variables de arriba" */
+  --color-background: rgb(var(--background));
+  --color-foreground: rgb(var(--foreground));
+  --color-primary: rgb(var(--primary));
+  --color-secondary: rgb(var(--secondary));
+  --color-muted: rgb(var(--muted));
+}
+
+/* 3. Estilos base limpios */
+@layer base {
+  body {
+    background-color: rgb(var(--background));
+    color: rgb(var(--foreground));
+    font-family: Arial, Helvetica, sans-serif;
+  }
+}
