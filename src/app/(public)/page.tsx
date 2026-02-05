@@ -1,12 +1,19 @@
 import Hero from "@/components/public/Hero";
-import About from "@/components/public/About";
+import Experience from "@/components/public/Experience";
+import ProjectsBento from "@/components/public/ProjectsBento";
+import TechStack from "@/components/public/TechStack";
+import Clients from "@/components/public/Clients";
+import ContactFooter from "@/components/public/ContactFooter"; 
 
 export default function Home() {
   return (
-    <main>
+    <main className="flex flex-col gap-0">
       <Hero />
-      <About />
-      {/* Aquí pondremos más secciones después: Skills, Projects, etc. */}
+      <Experience />
+      <ProjectsBento />
+      <TechStack />
+      <Clients />
+      <ContactFooter /> 
     </main>
   );
 }

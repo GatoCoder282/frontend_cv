@@ -7,6 +7,27 @@ import {
 
 // --- SERVICIO DE EXPERIENCIA LABORAL ---
 class WorkExperienceService {
+  // ============================================
+  // MÉTODOS PÚBLICOS (sin autenticación)
+  // ============================================
+
+  /**
+   * Obtiene todas las experiencias laborales públicas de un usuario por username
+   * @param username - Username del usuario
+   */
+  async getPublicWorkExperiences(username: string): Promise<WorkExperienceResponse[]> {
+    try {
+      const response = await api.get<WorkExperienceResponse[]>(`/work-experience/public/${username}`);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  // ============================================
+  // MÉTODOS PRIVADOS (requieren autenticación)
+  // ============================================
+
   /**
    * Crea una experiencia laboral
    * Requiere permisos de ADMIN

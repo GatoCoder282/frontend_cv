@@ -7,6 +7,27 @@ import {
 
 // --- SERVICIO DE TECNOLOGÍAS ---
 class TechnologyService {
+  // ============================================
+  // MÉTODOS PÚBLICOS (sin autenticación)
+  // ============================================
+
+  /**
+   * Obtiene todas las tecnologías públicas de un usuario por username
+   * @param username - Username del usuario
+   */
+  async getPublicTechnologies(username: string): Promise<TechnologyResponse[]> {
+    try {
+      const response = await api.get<TechnologyResponse[]>(`/technologies/public/${username}`);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  // ============================================
+  // MÉTODOS PRIVADOS (requieren autenticación)
+  // ============================================
+
   /**
    * Crea una tecnología
    * Requiere permisos de ADMIN

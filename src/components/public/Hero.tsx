@@ -1,142 +1,130 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Github, Linkedin, FileText, Download, User } from "lucide-react";
+import { ArrowRight, Code2, Terminal, Database } from "lucide-react";
 import Link from "next/link";
-import { useProfile } from "@/hooks/useProfile";
-import Image from "next/image";
+import Image from "next/image"; // Asegúrate de importar esto
 
 export default function Hero() {
-  const { profile, loading } = useProfile();
-
-  // Valores por defecto si no hay perfil
-  const displayName = profile ? `${profile.name} ${profile.last_name}` : "Diego Valdez";
-  const displayTitle = profile?.current_title || "Backend Developer & Data Engineer";
-  const displayBio = profile?.bio_summary || "Transformo datos complejos en arquitecturas de software eficientes. Especializado en el ecosistema Python, .NET y Arquitecturas Cloud (AWS/Azure). Enfocado en escalabilidad y optimización de procesos ETL.";
-  const displayPhoto = profile?.photo_url;
-
   return (
-    <section className="relative h-screen flex flex-col justify-center items-center overflow-hidden px-4">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 pt-20">
       
-      {/* --- FONDO INTERACTIVO (EL TOQUE "FACHERÍSIMO") --- */}
-      
-      {/* 1. Foco de luz principal (Índigo/Azul profundo) */}
-      <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-primary/30 rounded-full blur-[120px] pointer-events-none" />
-      
-      {/* 2. Foco de luz secundario (Verde suave/Emerald) */}
-      <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-secondary/20 rounded-full blur-[120px] pointer-events-none" />
+      {/* --- FONDOS AMBIENTALES --- */}
+      <div className="absolute top-0 right-0 w-[50%] h-[50%] bg-primary/20 rounded-full blur-[150px] pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[30%] h-[30%] bg-secondary/10 rounded-full blur-[120px] pointer-events-none" />
 
-      {/* 3. Malla sutil para textura (Opcional, le da toque técnico) */}
-      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10 pointer-events-none"></div>
-
-      <div className="z-10 text-center max-w-5xl">
+      <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center z-10">
         
-        {/* FOTO DE PERFIL (si existe) */}
-        {displayPhoto && (
+        {/* --- COLUMNA IZQUIERDA: TEXTO --- */}
+        <div className="text-center lg:text-left">
+          
+          {/* Badge animado */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="mb-6 flex justify-center"
+            className="inline-flex items-center gap-2 mb-6 px-4 py-2 border border-primary/30 rounded-full bg-primary/10 backdrop-blur-sm"
           >
-            <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-primary/30 shadow-[0_0_30px_rgba(79,70,229,0.3)]">
-              <Image 
-                src={displayPhoto} 
-                alt={displayName}
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
+            </span>
+            <span className="text-primary-300 text-xs font-bold tracking-widest uppercase">
+              Disponible para proyectos
+            </span>
           </motion.div>
-        )}
 
-        {/* ETIQUETA SUPERIOR */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="inline-block mb-6 px-4 py-1.5 border border-white/10 rounded-full bg-white/5 backdrop-blur-md"
-        >
-          <span className="text-secondary text-xs font-bold tracking-widest uppercase">
-            Disponible para nuevos proyectos
-          </span>
-        </motion.div>
-
-        {/* TÍTULO PRINCIPAL */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-6 text-white"
-        >
-          {loading ? (
-            <span className="animate-pulse">Cargando...</span>
-          ) : (
-            <>
-              {displayName} <br />
-              <span className="text-gradient">
-                {displayTitle}
-              </span>
-            </>
-          )}
-        </motion.h1>
-
-        {/* DESCRIPCIÓN */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="text-muted text-lg md:text-xl mb-10 max-w-3xl mx-auto leading-relaxed"
-        >
-          {loading ? (
-            <span className="animate-pulse">Cargando información...</span>
-          ) : (
-            displayBio
-          )}
-        </motion.p>
-
-        {/* BOTONES */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.3 }}
-          className="flex flex-col sm:flex-row gap-5 justify-center items-center"
-        >
-          {/* Botón Principal (Verde/Índigo sutil) */}
-          <Link 
-            href="#projects"
-            className="group px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.4)]"
+          {/* TÍTULO NUEVO */}
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-5xl md:text-7xl font-bold tracking-tight mb-6 text-white leading-tight"
           >
-            Ver Proyectos
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </Link>
+            Software Developer <br />
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-secondary">
+              & IT Solutions
+            </span>
+          </motion.h1>
 
-          {/* Botón CV */}
-          <a 
-            href="/cv.pdf" 
-            target="_blank"
-            className="px-8 py-4 border border-white/20 rounded-full hover:bg-white/5 transition-all flex items-center gap-2 text-white font-medium hover:border-secondary/50"
+          {/* DESCRIPCIÓN */}
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-muted text-lg md:text-xl mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed"
           >
-            <Download className="w-5 h-5" />
-            Descargar CV
-          </a>
+            Especialista en lógica de Backend y arquitecturas orientadas a datos. 
+            Transformo requerimientos complejos en sistemas eficientes utilizando 
+            <strong> Python, .NET y Tecnologías Cloud</strong>.
+          </motion.p>
+
+          {/* BOTONES (Solo navegación interna, sin links externos molestos) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+          >
+            <Link 
+              href="#projects"
+              className="px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+            >
+              Explorar Portfolio
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+            
+            <Link 
+              href="#contact"
+              className="px-8 py-4 border border-white/20 rounded-full hover:bg-white/5 transition-all text-white font-medium text-center"
+            >
+              Contactar
+            </Link>
+          </motion.div>
+        </div>
+
+        {/* --- COLUMNA DERECHA: IMAGEN CON EFECTOS --- */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.7 }}
+          className="relative flex justify-center lg:justify-end"
+        >
+          {/* Círculos decorativos detrás */}
+          <div className="absolute inset-0 bg-linear-to-tr from-primary to-secondary rounded-full opacity-20 blur-3xl animate-pulse" />
+          
+          {/* Elementos flotantes (Iconos de Backend) */}
+          <motion.div 
+            animate={{ y: [0, -20, 0] }} 
+            transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
+            className="absolute top-0 right-10 bg-black/80 border border-white/10 p-4 rounded-xl backdrop-blur-md z-20 shadow-xl hidden md:block"
+          >
+            <Terminal className="text-secondary w-8 h-8" />
+          </motion.div>
+
+          <motion.div 
+            animate={{ y: [0, 20, 0] }} 
+            transition={{ repeat: Infinity, duration: 5, ease: "easeInOut", delay: 1 }}
+            className="absolute bottom-10 left-10 bg-black/80 border border-white/10 p-4 rounded-xl backdrop-blur-md z-20 shadow-xl hidden md:block"
+          >
+            <Database className="text-primary w-8 h-8" />
+          </motion.div>
+
+          {/* CONTENEDOR DE LA IMAGEN */}
+          <div className="relative w-75 h-75 md:w-100 md:h-100 rounded-full border-4 border-white/5 overflow-hidden shadow-2xl z-10 bg-neutral-900">
+             {/* AQUÍ VA TU FOTO REAL. 
+                 Sube tu foto a /public/me.png y descomenta la línea de abajo.
+                 Por ahora uso un div gris de placeholder.
+             */}
+             {/* <Image src="/me.png" alt="Diego Valdez" fill className="object-cover" /> */}
+             
+             {/* Placeholder temporal hasta que pongas tu foto */}
+             <div className="w-full h-full flex items-center justify-center bg-linear-to-b from-gray-800 to-black">
+                <Code2 className="w-32 h-32 text-white/20" />
+             </div>
+          </div>
         </motion.div>
 
-        {/* ICONOS SOCIALES (El toque de color interactivo) */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-16 flex gap-8 justify-center items-center"
-        >
-          <a href="https://github.com/GatoCoder282" target="_blank" className="text-muted hover:text-white transition-colors transform hover:scale-110 duration-200">
-            <Github className="w-8 h-8" />
-          </a>
-          <a href="https://linkedin.com/in/diego-valdez-8750b4330" target="_blank" className="text-muted hover:text-[#0077b5] transition-colors transform hover:scale-110 duration-200">
-            <Linkedin className="w-8 h-8" />
-          </a>
-        </motion.div>
       </div>
     </section>
   );

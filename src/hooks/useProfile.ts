@@ -4,7 +4,11 @@ import { useState, useEffect } from 'react';
 import { profileService } from '@/services/profileService';
 import { ProfileResponse } from '@/types/user';
 
-export function useProfile() {
+/**
+ * Hook para obtener el perfil público de un usuario
+ * @param username - Username del usuario (requerido)
+ */
+export function useProfile(username: string) {
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -13,7 +17,8 @@ export function useProfile() {
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        const data = await profileService.getMyProfile();
+        // Usar endpoint público para vista pública
+        const data = await profileService.getPublicProfile(username);
         setProfile(data);
         setError(null);
       } catch (err: any) {
@@ -29,7 +34,7 @@ export function useProfile() {
     };
 
     fetchProfile();
-  }, []);
+  }, [username]);
 
   return { profile, loading, error };
 }

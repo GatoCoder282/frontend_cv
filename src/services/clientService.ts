@@ -7,6 +7,27 @@ import {
 
 // --- SERVICIO DE CLIENTES ---
 class ClientService {
+  // ============================================
+  // MÉTODOS PÚBLICOS (sin autenticación)
+  // ============================================
+
+  /**
+   * Obtiene todos los clientes públicos de un usuario por username
+   * @param username - Username del usuario
+   */
+  async getPublicClients(username: string): Promise<ClientResponse[]> {
+    try {
+      const response = await api.get<ClientResponse[]>(`/clients/public/${username}`);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  // ============================================
+  // MÉTODOS PRIVADOS (requieren autenticación)
+  // ============================================
+
   /**
    * Crea un cliente
    * Requiere permisos de ADMIN

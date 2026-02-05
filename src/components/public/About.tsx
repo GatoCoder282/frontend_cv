@@ -5,7 +5,8 @@ import { MapPin, Phone, Briefcase } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 
 export default function About() {
-  const { profile, loading } = useProfile();
+  const username = process.env.NEXT_PUBLIC_DEFAULT_USERNAME || "diego-valdez";
+  const { profile, loading } = useProfile(username);
 
   if (loading) {
     return (
@@ -24,7 +25,7 @@ export default function About() {
   return (
     <section id="about" className="py-20 px-4 relative">
       {/* Fondo sutil */}
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
       
       <div className="max-w-6xl mx-auto relative z-10">
         <motion.div
@@ -37,7 +38,7 @@ export default function About() {
           <h2 className="text-4xl md:text-5xl font-bold mb-4 text-white">
             Sobre <span className="text-gradient">Mí</span>
           </h2>
-          <div className="w-20 h-1 bg-gradient-to-r from-primary to-secondary mx-auto rounded-full" />
+          <div className="w-20 h-1 bg-linear-to-r from-primary to-secondary mx-auto rounded-full" />
         </motion.div>
 
         <div className="grid md:grid-cols-2 gap-8 items-start">

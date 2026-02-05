@@ -7,6 +7,54 @@ import {
 
 // --- SERVICIO DE PROYECTOS ---
 class ProjectService {
+  // ============================================
+  // MÉTODOS PÚBLICOS (sin autenticación)
+  // ============================================
+
+  /**
+   * Obtiene todos los proyectos públicos de un usuario por username
+   * @param username - Username del usuario
+   */
+  async getPublicProjects(username: string): Promise<ProjectResponse[]> {
+    try {
+      const response = await api.get<ProjectResponse[]>(`/projects/public/${username}`);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  /**
+   * Obtiene los proyectos destacados públicos de un usuario por username
+   * @param username - Username del usuario
+   */
+  async getPublicFeaturedProjects(username: string): Promise<ProjectResponse[]> {
+    try {
+      const response = await api.get<ProjectResponse[]>(`/projects/public/${username}/featured`);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  /**
+   * Obtiene un proyecto público específico por username y project_id
+   * @param username - Username del usuario
+   * @param projectId - ID del proyecto
+   */
+  async getPublicProjectById(username: string, projectId: number): Promise<ProjectResponse> {
+    try {
+      const response = await api.get<ProjectResponse>(`/projects/public/${username}/${projectId}`);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  // ============================================
+  // MÉTODOS PRIVADOS (requieren autenticación)
+  // ============================================
+
   /**
    * Crea un nuevo proyecto
    * Requiere permisos de ADMIN

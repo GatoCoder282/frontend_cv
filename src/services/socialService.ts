@@ -7,6 +7,27 @@ import {
 
 // --- SERVICIO DE SOCIAL LINKS ---
 class SocialService {
+  // ============================================
+  // MÉTODOS PÚBLICOS (sin autenticación)
+  // ============================================
+
+  /**
+   * Obtiene todos los social links públicos de un usuario por username
+   * @param username - Username del usuario
+   */
+  async getPublicSocials(username: string): Promise<SocialResponse[]> {
+    try {
+      const response = await api.get<SocialResponse[]>(`/social/public/${username}`);
+      return response.data;
+    } catch (error) {
+      throw handleApiError(error);
+    }
+  }
+
+  // ============================================
+  // MÉTODOS PRIVADOS (requieren autenticación)
+  // ============================================
+
   /**
    * Crea un social link
    * Requiere permisos de ADMIN
