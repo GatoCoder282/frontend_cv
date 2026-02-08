@@ -1,9 +1,31 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Mail, MapPin, Phone, Github, Linkedin, ArrowUpRight, Heart } from "lucide-react";
+import { Mail, MapPin, Phone, Github, Linkedin, ArrowUpRight, Heart, Twitter, Facebook, Instagram } from "lucide-react";
+import { useProfile } from "@/hooks/useProfile";
+import { usePublicSocials } from "@/hooks/usePublicSocials";
+import { usePortfolioContext } from "@/contexts/PortfolioContext";
+
+// Mapeo de iconos según la plataforma
+const getIconForPlatform = (platform: string) => {
+  const platformLower = platform.toLowerCase();
+  
+  if (platformLower.includes('github')) return Github;
+  if (platformLower.includes('linkedin')) return Linkedin;
+  if (platformLower.includes('twitter') || platformLower.includes('x')) return Twitter;
+  if (platformLower.includes('facebook')) return Facebook;
+  if (platformLower.includes('instagram')) return Instagram;
+  
+  return Mail;
+};
 
 export default function ContactFooter() {
+  const { username } = usePortfolioContext();
+  const whatsappLink = process.env.NEXT_PUBLIC_WHATSAPP_LINK || '#';
+  
+  const { profile, loading: profileLoading } = useProfile(username);
+  const { socials, loading: socialsLoading } = usePublicSocials(username);
+
   return (
     <footer id="contact" className="relative bg-black pt-24 pb-12 overflow-hidden border-t border-white/10">
       
@@ -21,17 +43,22 @@ export default function ContactFooter() {
               whileInView={{ opacity: 1, y: 0 }}
               className="text-2xl font-bold text-white"
             >
-              Diego <span className="text-primary">Valdez</span>
+              {profile ? (
+                <>
+                  {profile.name} <span className="text-primary">{profile.last_name}</span>
+                </>
+              ) : (
+                'Loading...'
+              )}
             </motion.h3>
             
             <p className="text-muted leading-relaxed">
-              Ingeniero de Sistemas en formación con pasión por el backend robusto y la ciencia de datos. 
-              Me impulsa el pragmatismo, la curiosidad constante y la búsqueda de soluciones escalables.
+              {profile?.bio_summary || 'Loading bio summary...'}
             </p>
 
-            {/* Valores extraídos de tu CV [cite: 87-94] */}
+            {/* Valores extraídos de tu CV */}
             <div className="flex flex-wrap gap-2">
-              {["Pragmatismo", "Curiosidad", "Mente Equilibrada", "Familia Primero"].map((val) => (
+              {["Pragmatism", "Curiosity", "Balanced Mind", "Family First"].map((val) => (
                 <span key={val} className="px-3 py-1 text-xs font-medium bg-white/5 border border-white/10 rounded-full text-gray-400">
                   {val}
                 </span>
@@ -41,55 +68,70 @@ export default function ContactFooter() {
 
           {/* COLUMNA 2: Contacto Directo */}
           <div className="space-y-6">
-            <h4 className="text-lg font-bold text-white">Información de Contacto</h4>
+            <h4 className="text-lg font-bold text-white">Contact Information</h4>
             <ul className="space-y-4">
               <li>
-                <a href="mailto:diegomvaldez19@gmail.com" className="flex items-center gap-3 text-muted hover:text-primary transition-colors group">
+                <a href={`mailto:${profile?.email}`} className="flex items-center gap-3 text-muted hover:text-primary transition-colors group">
                   <div className="p-2 bg-white/5 rounded-lg group-hover:bg-primary/20 transition-colors">
                     <Mail size={18} />
                   </div>
-                  diegomvaldez19@gmail.com
+                  {profile?.email || 'Loading email...'}
                 </a>
               </li>
               <li>
-                <a href="tel:+59167405100" className="flex items-center gap-3 text-muted hover:text-secondary transition-colors group">
+                <a href={`tel:${profile?.phone}`} className="flex items-center gap-3 text-muted hover:text-secondary transition-colors group">
                   <div className="p-2 bg-white/5 rounded-lg group-hover:bg-secondary/20 transition-colors">
                     <Phone size={18} />
                   </div>
-                  +591 674 05 100
+                  {profile?.phone || 'Not available'}
                 </a>
               </li>
               <li className="flex items-center gap-3 text-muted">
                 <div className="p-2 bg-white/5 rounded-lg">
                   <MapPin size={18} />
                 </div>
-                Cochabamba, Bolivia
+                {profile?.location || 'Not specified'}
               </li>
             </ul>
           </div>
 
           {/* COLUMNA 3: Call to Action & Socials */}
           <div className="space-y-6">
-            <h4 className="text-lg font-bold text-white">¿Hablamos?</h4>
+            <h4 className="text-lg font-bold text-white">Let's Talk</h4>
             <p className="text-muted">
-              Actualmente disponible para nuevos proyectos y colaboraciones.
+              Currently available for new projects and collaborations.
             </p>
             
             <a 
-              href="mailto:diegomvaldez19@gmail.com"
+              href={whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 bg-white text-black font-bold rounded-lg hover:bg-gray-200 transition-all w-full md:w-auto justify-center"
             >
-              Iniciar Conversación
+              Start Conversation
               <ArrowUpRight size={18} />
             </a>
 
             <div className="flex gap-4 pt-4">
-              <a href="https://github.com/GatoCoder282" target="_blank" className="p-3 bg-white/5 rounded-full hover:bg-white/20 hover:text-white transition-all text-muted">
-                <Github size={20} />
-              </a>
-              <a href="https://linkedin.com/in/diego-valdez-8750b4330" target="_blank" className="p-3 bg-white/5 rounded-full hover:bg-[#0A66C2] hover:text-white transition-all text-muted">
-                <Linkedin size={20} />
-              </a>
+              {!socialsLoading && socials.length > 0 ? (
+                socials.map((social) => {
+                  const IconComponent = getIconForPlatform(social.platform);
+                  return (
+                    <a 
+                      key={social.id}
+                      href={social.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="p-3 bg-white/5 rounded-full hover:bg-white/20 hover:text-white transition-all text-muted"
+                      title={social.platform}
+                    >
+                      <IconComponent size={20} />
+                    </a>
+                  );
+                })
+              ) : (
+                <span className="text-muted">Loading socials...</span>
+              )}
             </div>
           </div>
 
@@ -97,9 +139,9 @@ export default function ContactFooter() {
 
         {/* BOTTOM FOOTER */}
         <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-500">
-          <p>© {new Date().getFullYear()} Diego Valdez. Todos los derechos reservados.</p>
+          <p>© {new Date().getFullYear()} {profile?.name || 'Diego'} {profile?.last_name || 'Valdez'}. All rights reserved.</p>
           <p className="flex items-center gap-1">
-            Hecho con <Heart size={14} className="text-red-500 fill-red-500" /> y Next.js
+            Made with <Heart size={14} className="text-red-500 fill-red-500" /> and Next.js
           </p>
         </div>
       </div>

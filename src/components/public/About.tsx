@@ -5,8 +5,7 @@ import { MapPin, Phone, Briefcase } from "lucide-react";
 import { useProfile } from "@/hooks/useProfile";
 
 export default function About() {
-  const username = process.env.NEXT_PUBLIC_DEFAULT_USERNAME || "diego-valdez";
-  const { profile, loading } = useProfile(username);
+  const { profile, loading } = useProfile("droyy282");
 
   if (loading) {
     return (

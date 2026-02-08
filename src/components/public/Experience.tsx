@@ -2,30 +2,26 @@
 
 import { motion } from "framer-motion";
 import { Briefcase, Calendar, MapPin } from "lucide-react";
-
-// Datos extraídos de tu CV [cite: 71, 80]
-const JOBS = [
-  {
-    id: 1,
-    role: "Systems and Data Analyst",
-    company: "C&C, Cowork & Coffee shop",
-    period: "July 2025 - Present",
-    location: "Cochabamba, Bolivia",
-    description: "Análisis de datos y sistemas para optimizar la operación de la cafetería, apoyando decisiones sobre inventario, ventas y experiencia del cliente. Desarrollo de software 'SCRAPPY' para automatización ETL.",
-    tech: ["Python", "Streamlit", "Pandas", "Selenium"],
-  },
-  {
-    id: 2,
-    role: "Software Full-STACK Developer",
-    company: "Bélica Marketing",
-    period: "December 2025",
-    location: "Remote / Hybrid",
-    description: "Desarrollo de software diseñado para automatizar procesos ETL utilizando web scraping y procesamiento de datos. Implementación de soluciones en la nube.",
-    tech: ["Node.js", "SQLite", "Strapi", "Stripe"],
-  },
-];
+import { usePortfolioContext } from "@/contexts/PortfolioContext";
+import { usePublicWorkExperience } from "@/hooks/usePublicWorkExperience";
 
 export default function Experience() {
+  const { username } = usePortfolioContext();
+  const { experiences, loading, error } = usePublicWorkExperience(username);
+
+  // Ordenar experiencias: primero las que no han finalizado (Present), luego por fecha más reciente
+  const sortedExperiences = [...experiences].sort((a, b) => {
+    // Si a no tiene end_date (Present), va primero
+    if (!a.end_date && b.end_date) return -1;
+    if (a.end_date && !b.end_date) return 1;
+    // Si ambas tienen end_date o ambas no tienen, ordenar por fecha más reciente
+    if (a.end_date && b.end_date) {
+      return new Date(b.end_date).getTime() - new Date(a.end_date).getTime();
+    }
+    // Si ambas no tienen fecha (Present), mantener orden original
+    return 0;
+  });
+
   return (
     <section id="experience" className="py-24 px-4 relative">
       <div className="max-w-4xl mx-auto">
@@ -46,7 +42,25 @@ export default function Experience() {
         {/* Timeline Container */}
         <div className="relative border-l-2 border-white/10 ml-4 md:ml-12 space-y-12">
           
-          {JOBS.map((job, index) => (
+          {loading && (
+            <div className="text-center text-muted py-12">
+              Cargando experiencia...
+            </div>
+          )}
+
+          {error && (
+            <div className="text-center text-red-500 py-12">
+              Error al cargar la experiencia
+            </div>
+          )}
+
+          {!loading && !error && experiences.length === 0 && (
+            <div className="text-center text-muted py-12">
+              No hay experiencia laboral disponible
+            </div>
+          )}
+
+          {sortedExperiences.map((job, index) => (
             <motion.div
               key={job.id}
               initial={{ opacity: 0, x: -20 }}
@@ -64,33 +78,37 @@ export default function Experience() {
                 <div className="min-w-37.5 pt-1">
                   <span className="flex items-center gap-2 text-sm font-semibold text-muted font-mono">
                     <Calendar className="w-4 h-4 text-secondary" />
-                    {job.period}
+                    {new Date(job.start_date).toLocaleDateString('es-ES', { 
+                      month: 'short', 
+                      year: 'numeric' 
+                    })}
+                    {job.end_date ? ` - ${new Date(job.end_date).toLocaleDateString('es-ES', { 
+                      month: 'short', 
+                      year: 'numeric' 
+                    })}` : ' - Present'}
                   </span>
                 </div>
 
                 {/* Tarjeta de Contenido */}
                 <div className="flex-1 bg-white/5 border border-white/5 p-6 rounded-2xl hover:border-primary/30 transition-colors">
-                  <h3 className="text-xl font-bold text-foreground">{job.role}</h3>
+                  <h3 className="text-xl font-bold text-foreground">{job.job_title}</h3>
                   <div className="flex items-center gap-2 text-primary mb-4 font-medium">
                     <Briefcase className="w-4 h-4" />
                     {job.company}
                   </div>
-                  
-                  <p className="text-muted leading-relaxed mb-6 text-sm md:text-base">
-                    {job.description}
-                  </p>
 
-                  {/* Badges de tecnologías */}
-                  <div className="flex flex-wrap gap-2">
-                    {job.tech.map((t) => (
-                      <span 
-                        key={t} 
-                        className="px-3 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary-300 border border-primary/20"
-                      >
-                        {t}
-                      </span>
-                    ))}
-                  </div>
+                  {job.location && (
+                    <div className="flex items-center gap-2 text-muted text-sm mb-3">
+                      <MapPin className="w-4 h-4" />
+                      {job.location}
+                    </div>
+                  )}
+                  
+                  {job.description && (
+                    <p className="text-muted leading-relaxed text-sm md:text-base">
+                      {job.description}
+                    </p>
+                  )}
                 </div>
               </div>
             </motion.div>

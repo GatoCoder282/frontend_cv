@@ -1,19 +1,8 @@
-import Hero from "@/components/public/Hero";
-import Experience from "@/components/public/Experience";
-import ProjectsBento from "@/components/public/ProjectsBento";
-import TechStack from "@/components/public/TechStack";
-import Clients from "@/components/public/Clients";
-import ContactFooter from "@/components/public/ContactFooter"; 
+"use client";
+
+import PublicPortfolio from "@/components/public/PublicPortfolio";
 
 export default function Home() {
-  return (
-    <main className="flex flex-col gap-0">
-      <Hero />
-      <Experience />
-      <ProjectsBento />
-      <TechStack />
-      <Clients />
-      <ContactFooter /> 
-    </main>
-  );
+  const defaultUsername = process.env.NEXT_PUBLIC_DEFAULT_USERNAME || 'droyy282';
+  return <PublicPortfolio username={defaultUsername} />;
 }

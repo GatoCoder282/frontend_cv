@@ -1,24 +1,19 @@
 // Enums que corresponden a los del backend
 
 export enum TechnologyCategory {
-  FRONTEND = "FRONTEND",
-  BACKEND = "BACKEND",
-  DATABASE = "DATABASE",
-  DEVOPS = "DEVOPS",
-  MOBILE = "MOBILE",
-  TOOL = "TOOL",
-  OTHER = "OTHER"
+  FRONTEND = "frontend",
+  BACKEND = "backend",
+  DATABASE = "databases",
+  APIS = "apis",
+  DEV_TOOLS = "dev_tools",
+  CLOUD = "cloud",
+  TESTING = "testing",
+  ARCHITECTURE = "architecture",
+  SECURITY = "security"
 }
 
 export enum ProjectCategory {
-  WEB = "WEB",
-  MOBILE = "MOBILE",
-  DESKTOP = "DESKTOP",
-  API = "API",
-  DATA_SCIENCE = "DATA_SCIENCE",
-  MACHINE_LEARNING = "MACHINE_LEARNING",
-  BLOCKCHAIN = "BLOCKCHAIN",
-  IOT = "IOT",
-  GAME = "GAME",
-  OTHER = "OTHER"
+  FULLSTACK = "fullstack",
+  BACKEND = "backend",
+  FRONTEND = "frontend",
 }

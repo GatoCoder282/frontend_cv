@@ -15,11 +15,16 @@ const api: AxiosInstance = axios.create({
 // --- INTERCEPTOR DE REQUEST: Añade el token JWT automáticamente ---
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Obtener token del localStorage
-    const token = localStorage.getItem('access_token');
+    // Verificar si es una ruta pública (no necesita autenticación)
+    const isPublicRoute = config.url?.includes('/public/') || config.url?.includes('/public');
     
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
+    // Solo agregar token si NO es una ruta pública
+    if (!isPublicRoute) {
+      const token = localStorage.getItem('access_token');
+      
+      if (token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     
     return config;
@@ -80,11 +85,35 @@ export interface ApiError {
 
 export const handleApiError = (error: unknown): ApiError => {
   if (axios.isAxiosError(error)) {
-    const axiosError = error as AxiosError<{ detail: string }>;
+    const axiosError = error as AxiosError;
+    const responseData = axiosError.response?.data as any;
+    let message = axiosError.message;
+
+    // Manejar errores de validación (422) - Pydantic validation errors
+    if (axiosError.response?.status === 422 && Array.isArray(responseData)) {
+      const errors = responseData.map((err: any) => {
+        const field = err.loc?.[1] || err.loc?.[0] || 'campo';
+        const msg = err.msg || 'Error de validación';
+        return `${field}: ${msg}`;
+      });
+      message = errors.join('. ');
+    }
+    // Manejar respuestas con detalle
+    else if (responseData?.detail) {
+      message = typeof responseData.detail === 'string' 
+        ? responseData.detail 
+        : Array.isArray(responseData.detail)
+          ? responseData.detail.map((err: any) => {
+              const field = err.loc?.[1] || err.loc?.[0] || 'campo';
+              const msg = err.msg || 'Error de validación';
+              return `${field}: ${msg}`;
+            }).join('. ')
+          : JSON.stringify(responseData.detail);
+    }
     
     return {
-      message: axiosError.response?.data?.detail || axiosError.message,
-      detail: axiosError.response?.data?.detail,
+      message,
+      detail: typeof responseData?.detail === 'string' ? responseData.detail : undefined,
       status: axiosError.response?.status,
     };
   }

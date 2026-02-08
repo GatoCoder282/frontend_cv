@@ -55,6 +55,7 @@ import {
 import { projectService } from "@/services/projectService";
 import { technologyService } from "@/services/technologyService";
 import { workExperienceService } from "@/services/workExperienceService";
+import { cloudinaryService } from "@/services/cloudinaryService";
 import {
   ProjectCreateRequest,
   ProjectResponse,
@@ -67,7 +68,7 @@ import { ApiError } from "@/services/api";
 
 const emptyForm: ProjectCreateRequest = {
   title: "",
-  category: ProjectCategory.WEB,
+  category: ProjectCategory.FULLSTACK,
   description: "",
   thumbnail_url: "",
   live_url: "",
@@ -80,6 +81,12 @@ const emptyForm: ProjectCreateRequest = {
 
 const PROJECT_CATEGORIES = Object.values(ProjectCategory);
 
+const PROJECT_CATEGORY_LABELS: Record<ProjectCategory, string> = {
+  [ProjectCategory.FULLSTACK]: "Fullstack",
+  [ProjectCategory.BACKEND]: "Backend",
+  [ProjectCategory.FRONTEND]: "Frontend",
+};
+
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<ProjectResponse[]>([]);
   const [technologies, setTechnologies] = useState<TechnologyResponse[]>([]);
@@ -87,6 +94,7 @@ export default function ProjectsPage() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -167,7 +175,7 @@ export default function ProjectsPage() {
       repo_url: project.repo_url ?? "",
       featured: project.featured,
       work_experience_id: project.work_experience_id,
-      technology_ids: project.technology_ids,
+      technology_ids: project.technologies?.map((tech) => tech.id) || [],
       previews: project.previews || [],
     });
     setDialogOpen(true);
@@ -231,6 +239,24 @@ export default function ProjectsPage() {
       setError(apiError.message || "No se pudo guardar el proyecto");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleUploadThumbnail = async (file?: File) => {
+    if (!file) return;
+    setUploadingThumbnail(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const result = await cloudinaryService.uploadImage(file, "project");
+      setForm((prev) => ({ ...prev, thumbnail_url: result.url }));
+      setSuccess("Thumbnail subido correctamente");
+    } catch (err) {
+      const apiError = err as ApiError;
+      setError(apiError.message || "No se pudo subir el thumbnail");
+    } finally {
+      setUploadingThumbnail(false);
     }
   };
 
@@ -307,10 +333,6 @@ export default function ProjectsPage() {
     return "";
   }, [trimmedThumbnail, trimmedLiveUrl, trimmedRepoUrl]);
 
-  const getTechName = (techId: number) => {
-    return technologies.find((t) => t.id === techId)?.name || `Tech #${techId}`;
-  };
-
   const getWorkExperienceName = (weId: number | null) => {
     if (!weId) return "-";
     return workExperiences.find((we) => we.id === weId)?.job_title || "-";
@@ -318,16 +340,9 @@ export default function ProjectsPage() {
 
   const getCategoryColor = (category: ProjectCategory) => {
     const colors: Record<ProjectCategory, string> = {
-      [ProjectCategory.WEB]: "#00e5ff",
-      [ProjectCategory.MOBILE]: "#ff9800",
-      [ProjectCategory.DESKTOP]: "#9c27b0",
-      [ProjectCategory.API]: "#2196f3",
-      [ProjectCategory.DATA_SCIENCE]: "#4caf50",
-      [ProjectCategory.MACHINE_LEARNING]: "#f44336",
-      [ProjectCategory.BLOCKCHAIN]: "#ffc107",
-      [ProjectCategory.IOT]: "#00bcd4",
-      [ProjectCategory.GAME]: "#e91e63",
-      [ProjectCategory.OTHER]: "#9e9e9e",
+      [ProjectCategory.FULLSTACK]: "#00e5ff",
+      [ProjectCategory.BACKEND]: "#2196f3",
+      [ProjectCategory.FRONTEND]: "#ff9800",
     };
     return colors[category] || "#9e9e9e";
   };
@@ -465,7 +480,7 @@ export default function ProjectsPage() {
                     </TableCell>
                     <TableCell>
                       <Chip
-                        label={project.category}
+                        label={PROJECT_CATEGORY_LABELS[project.category]}
                         size="small"
                         sx={{
                           bgcolor: `${getCategoryColor(project.category)}20`,
@@ -477,11 +492,11 @@ export default function ProjectsPage() {
                     </TableCell>
                     <TableCell>
                       <Stack direction="row" spacing={0.5} flexWrap="wrap" gap={0.5}>
-                        {project.technology_ids.length > 0 ? (
-                          project.technology_ids.map((techId) => (
+                        {project.technologies && project.technologies.length > 0 ? (
+                          project.technologies.map((tech) => (
                             <Chip
-                              key={techId}
-                              label={getTechName(techId)}
+                              key={tech.id}
+                              label={tech.name}
                               size="small"
                               variant="outlined"
                             />
@@ -608,7 +623,7 @@ export default function ProjectsPage() {
                         </Stack>
 
                         <Chip
-                          label={project.category}
+                          label={PROJECT_CATEGORY_LABELS[project.category]}
                           size="small"
                           sx={{
                             bgcolor: `${getCategoryColor(project.category)}20`,
@@ -630,19 +645,19 @@ export default function ProjectsPage() {
                           </Typography>
                         )}
 
-                        {project.technology_ids.length > 0 && (
+                        {project.technologies && project.technologies.length > 0 && (
                           <Stack direction="row" spacing={0.5} flexWrap="wrap" gap={0.5} mb={1}>
-                            {project.technology_ids.slice(0, 5).map((techId) => (
+                            {project.technologies.slice(0, 5).map((tech) => (
                               <Chip
-                                key={techId}
-                                label={getTechName(techId)}
+                                key={tech.id}
+                                label={tech.name}
                                 size="small"
                                 variant="outlined"
                               />
                             ))}
-                            {project.technology_ids.length > 5 && (
+                            {project.technologies.length > 5 && (
                               <Chip
-                                label={`+${project.technology_ids.length - 5}`}
+                                label={`+${project.technologies.length - 5}`}
                                 size="small"
                                 variant="outlined"
                               />
@@ -759,7 +774,7 @@ export default function ProjectsPage() {
                     >
                       {PROJECT_CATEGORIES.map((cat) => (
                         <MenuItem key={cat} value={cat}>
-                          {cat}
+                          {PROJECT_CATEGORY_LABELS[cat]}
                         </MenuItem>
                       ))}
                     </Select>
@@ -779,15 +794,38 @@ export default function ProjectsPage() {
 
               {/* URLs */}
               <Divider>URLs y Enlaces</Divider>
-              <TextField
-                label="URL de Thumbnail"
-                value={form.thumbnail_url}
-                onChange={(e) => handleChange("thumbnail_url", e.target.value)}
-                fullWidth
-                error={Boolean(urlError)}
-                helperText={urlError || "https://ejemplo.com/imagen.jpg"}
-                placeholder="https://"
-              />
+              <Stack direction="row" spacing={2} alignItems="center">
+                <Button
+                  variant="outlined"
+                  component="label"
+                  startIcon={
+                    uploadingThumbnail ? <CircularProgress size={16} /> : <ImageIcon />
+                  }
+                  disabled={uploadingThumbnail}
+                >
+                  {uploadingThumbnail ? "Subiendo..." : "Subir thumbnail"}
+                  <input
+                    hidden
+                    type="file"
+                    accept="image/*"
+                    onChange={(event) =>
+                      handleUploadThumbnail(event.target.files?.[0])
+                    }
+                  />
+                </Button>
+                <Avatar
+                  src={form.thumbnail_url || undefined}
+                  sx={{
+                    width: 44,
+                    height: 44,
+                    bgcolor: "rgba(0, 229, 255, 0.1)",
+                    color: "primary.main",
+                    border: "1px solid rgba(0, 229, 255, 0.2)",
+                  }}
+                >
+                  <ImageIcon fontSize="small" />
+                </Avatar>
+              </Stack>
 
               <Stack direction={{ xs: "column", md: "row" }} spacing={2}>
                 <Box sx={{ flex: 1 }}>

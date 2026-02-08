@@ -38,6 +38,8 @@ export interface ProfileCreateRequest {
   location?: string | null;
   phone?: string | null;
   photo_url?: string | null;
+  profile?: string | null;
+  cv_url?: string | null;
 }
 
 // INPUT: Actualizar perfil
@@ -49,6 +51,8 @@ export interface ProfileUpdateRequest {
   location?: string | null;
   phone?: string | null;
   photo_url?: string | null;
+  profile?: string | null;
+  cv_url?: string | null;
 }
 
 // OUTPUT: Respuesta de perfil
@@ -63,4 +67,6 @@ export interface ProfileResponse {
   location: string | null;
   phone: string | null;
   photo_url: string | null;
+  profile: string | null;
+  cv_url: string | null;
 }

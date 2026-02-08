@@ -19,6 +19,7 @@ import {
   Person,
   Refresh,
   Image as ImageIcon,
+  PictureAsPdf,
 } from '@mui/icons-material';
 import { profileService } from '@/services/profileService';
 import { cloudinaryService } from '@/services/cloudinaryService';
@@ -33,6 +34,8 @@ const emptyForm: ProfileCreateRequest = {
   location: 'Cochabamba, Bolivia',
   phone: '',
   photo_url: '',
+  profile: '',
+  cv_url: '',
 };
 
 export default function ProfilePage() {
@@ -44,8 +47,10 @@ export default function ProfilePage() {
   const [success, setSuccess] = useState('');
   const [profile, setProfile] = useState<ProfileResponse | null>(null);
   const [form, setForm] = useState<ProfileCreateRequest>(emptyForm);
+  const [uploadingCV, setUploadingCV] = useState(false);
 
   const hasPhoto = useMemo(() => !!form.photo_url?.trim(), [form.photo_url]);
+  const hasCV = useMemo(() => !!form.cv_url?.trim(), [form.cv_url]);
 
   const loadProfile = async () => {
     setLoading(true);
@@ -63,6 +68,8 @@ export default function ProfilePage() {
         location: data.location ?? '',
         phone: data.phone ?? '',
         photo_url: data.photo_url ?? '',
+        profile: data.profile ?? '',
+        cv_url: data.cv_url ?? '',
       });
       setIsNew(false);
     } catch (err) {
@@ -108,6 +115,8 @@ export default function ProfilePage() {
           location: form.location || null,
           phone: form.phone || null,
           photo_url: form.photo_url || null,
+          profile: form.profile || null,
+          cv_url: form.cv_url || null,
         };
         const updated = await profileService.updateMyProfile(payload);
         setProfile(updated);
@@ -137,6 +146,25 @@ export default function ProfilePage() {
       setError(apiError.message || 'No se pudo subir la imagen');
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleUploadCV = async (file?: File) => {
+    if (!file) return;
+
+    setUploadingCV(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const result = await cloudinaryService.uploadPDF(file, 'cv');
+      setForm((prev) => ({ ...prev, cv_url: result.url }));
+      setSuccess('CV subido correctamente');
+    } catch (err) {
+      const apiError = err as ApiError;
+      setError(apiError.message || 'No se pudo subir el CV');
+    } finally {
+      setUploadingCV(false);
     }
   };
 
@@ -285,10 +313,65 @@ export default function ProfilePage() {
                   value={form.bio_summary}
                   onChange={(e) => handleChange('bio_summary', e.target.value)}
                   multiline
-                  rows={4}
+                  rows={3}
                   inputProps={{ maxLength: 500 }}
-                  helperText={`${form.bio_summary?.length || 0}/500`}
+                  helperText={`${form.bio_summary?.length || 0}/500 caracteres`}
                 />
+
+                <TextField
+                  fullWidth
+                  label="Resumen de Perfil"
+                  value={form.profile}
+                  onChange={(e) => handleChange('profile', e.target.value)}
+                  multiline
+                  rows={4}
+                  inputProps={{ maxLength: 2000 }}
+                  helperText={`${form.profile?.length || 0}/2000 caracteres - Resumen de lo que haces`}
+                />
+
+                <Box sx={{ 
+                  p: 3, 
+                  border: '1px solid rgba(0, 229, 255, 0.2)', 
+                  borderRadius: 2,
+                  bgcolor: 'rgba(0, 229, 255, 0.05)'
+                }}>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <PictureAsPdf sx={{ fontSize: 40, color: 'primary.main' }} />
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="subtitle1" fontWeight="bold">
+                        Curriculum Vitae (PDF)
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {hasCV ? (
+                          <a 
+                            href={form.cv_url || ''} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            style={{ color: '#00e5ff', textDecoration: 'underline' }}
+                          >
+                            Ver CV actual
+                          </a>
+                        ) : (
+                          'No hay CV cargado'
+                        )}
+                      </Typography>
+                    </Box>
+                    <Button
+                      variant="contained"
+                      component="label"
+                      startIcon={uploadingCV ? <CircularProgress size={16} /> : <PictureAsPdf />}
+                      disabled={uploadingCV}
+                    >
+                      {uploadingCV ? 'Subiendo...' : 'Subir CV'}
+                      <input
+                        hidden
+                        type="file"
+                        accept="application/pdf,.pdf"
+                        onChange={(e) => handleUploadCV(e.target.files?.[0])}
+                      />
+                    </Button>
+                  </Stack>
+                </Box>
               </Stack>
 
               <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>

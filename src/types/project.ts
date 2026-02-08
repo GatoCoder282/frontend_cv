@@ -1,4 +1,5 @@
 import { ProjectCategory } from './enums';
+import { TechnologyResponse } from './technology';
 
 // --- PROJECT PREVIEW DTOs ---
 
@@ -60,6 +61,6 @@ export interface ProjectResponse {
   repo_url: string | null;
   featured: boolean;
   work_experience_id: number | null;
-  technology_ids: number[];
+  technologies: TechnologyResponse[];
   previews: ProjectPreviewResponse[];
 }

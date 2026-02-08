@@ -2,32 +2,12 @@
 
 import { motion } from "framer-motion";
 import { Quote } from "lucide-react";
-
-const TESTIMONIALS = [
-  {
-    id: 1,
-    client: "C&C Cowork & Coffee",
-    role: "Gerencia",
-    feedback: "Diego optimizó nuestra gestión de inventarios con un análisis de datos preciso. Su solución automatizada nos ahorra horas de trabajo manual cada semana.",
-    highlight: "Optimización de Inventario"
-  },
-  {
-    id: 2,
-    client: "Bélica Marketing",
-    role: "Tech Lead",
-    feedback: "La implementación del proceso ETL fue impecable. Logró estructurar datos desordenados de múltiples fuentes en un dashboard claro y accionable.",
-    highlight: "Automatización ETL"
-  },
-  {
-    id: 3,
-    client: "Universidad Católica",
-    role: "Academic Project",
-    feedback: "Excelente implementación de patrones de arquitectura en el proyecto InMemoriam. Código limpio, escalable y bien documentado.",
-    highlight: "Arquitectura de Software"
-  }
-];
+import { usePublicClients } from "@/hooks/usePublicClients";
+import { usePortfolioContext } from "@/contexts/PortfolioContext";
 
 export default function Clients() {
+  const { username } = usePortfolioContext();
+  const { clients, loading } = usePublicClients(username);
   return (
     <section id="clients" className="py-24 px-4 bg-white/5 relative">
       <div className="max-w-7xl mx-auto">
@@ -38,13 +18,14 @@ export default function Clients() {
           className="text-center mb-16"
         >
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            Impacto <span className="text-primary">Real</span>
+            Real <span className="text-primary">Impact</span>
           </h2>
-          <p className="text-muted">Lo que dicen sobre mi trabajo</p>
+          <p className="text-muted">What my clients say about my work</p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {TESTIMONIALS.map((item, index) => (
+          {!loading && clients.length > 0 ? (
+            clients.map((item, index) => (
             <motion.div
               key={item.id}
               initial={{ opacity: 0, y: 20 }}
@@ -56,19 +37,24 @@ export default function Clients() {
               <Quote className="absolute top-6 right-6 text-white/5 w-12 h-12" />
 
               <div className="text-secondary text-sm font-bold tracking-wider uppercase mb-4">
-                {item.highlight}
+                {item.company || 'Client'}
               </div>
               
               <p className="text-muted mb-6 leading-relaxed">
-                "{item.feedback}"
+                "{item.feedback || 'No feedback provided'}"
               </p>
 
               <div className="border-t border-white/10 pt-4">
-                <div className="font-bold text-white">{item.client}</div>
-                <div className="text-sm text-gray-500">{item.role}</div>
+                <div className="font-bold text-white">{item.name}</div>
+                <div className="text-sm text-gray-500">Client</div>
               </div>
             </motion.div>
-          ))}
+))
+          ) : (
+            <div className="col-span-full text-center text-muted">
+              {loading ? 'Loading clients...' : 'No clients available'}
+            </div>
+          )}
         </div>
 
       </div>

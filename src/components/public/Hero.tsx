@@ -1,11 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Code2, Terminal, Database } from "lucide-react";
+import { ArrowRight, Code2, Terminal, Database, Download } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image"; // Asegúrate de importar esto
+import Image from "next/image";
+import { usePortfolioContext } from "@/contexts/PortfolioContext";
+import { useProfile } from "@/hooks/useProfile";
 
 export default function Hero() {
+  const { username } = usePortfolioContext();
+  const { profile } = useProfile(username);
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 pt-20">
       
@@ -30,7 +34,7 @@ export default function Hero() {
               <span className="relative inline-flex rounded-full h-2 w-2 bg-secondary"></span>
             </span>
             <span className="text-primary-300 text-xs font-bold tracking-widest uppercase">
-              Disponible para proyectos
+              Available for projects
             </span>
           </motion.div>
 
@@ -54,9 +58,7 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-muted text-lg md:text-xl mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed"
           >
-            Especialista en lógica de Backend y arquitecturas orientadas a datos. 
-            Transformo requerimientos complejos en sistemas eficientes utilizando 
-            <strong> Python, .NET y Tecnologías Cloud</strong>.
+            {profile?.profile || "Especialista en lógica de Backend y arquitecturas orientadas a datos. Transformo requerimientos complejos en sistemas eficientes utilizando Python, .NET y Tecnologías Cloud."}
           </motion.p>
 
           {/* BOTONES (Solo navegación interna, sin links externos molestos) */}
@@ -70,16 +72,29 @@ export default function Hero() {
               href="#projects"
               className="px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-gray-200 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
             >
-              Explorar Portfolio
+              Explore Projects
               <ArrowRight className="w-5 h-5" />
             </Link>
             
-            <Link 
-              href="#contact"
-              className="px-8 py-4 border border-white/20 rounded-full hover:bg-white/5 transition-all text-white font-medium text-center"
-            >
-              Contactar
-            </Link>
+            {profile?.cv_url ? (
+              <a 
+                href={profile.cv_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-8 py-4 border border-white/20 rounded-full hover:bg-white/5 transition-all text-white font-medium text-center flex items-center justify-center gap-2"
+              >
+                Download CV
+                <Download className="w-5 h-5" />
+              </a>
+            ) : (
+              <button
+                disabled
+                className="px-8 py-4 border border-white/10 rounded-full text-white/40 font-medium text-center flex items-center justify-center gap-2 cursor-not-allowed"
+              >
+                Download CV
+                <Download className="w-5 h-5" />
+              </button>
+            )}
           </motion.div>
         </div>
 
@@ -92,7 +107,7 @@ export default function Hero() {
         >
           {/* Círculos decorativos detrás */}
           <div className="absolute inset-0 bg-linear-to-tr from-primary to-secondary rounded-full opacity-20 blur-3xl animate-pulse" />
-          
+
           {/* Elementos flotantes (Iconos de Backend) */}
           <motion.div 
             animate={{ y: [0, -20, 0] }} 
@@ -112,16 +127,18 @@ export default function Hero() {
 
           {/* CONTENEDOR DE LA IMAGEN */}
           <div className="relative w-75 h-75 md:w-100 md:h-100 rounded-full border-4 border-white/5 overflow-hidden shadow-2xl z-10 bg-neutral-900">
-             {/* AQUÍ VA TU FOTO REAL. 
-                 Sube tu foto a /public/me.png y descomenta la línea de abajo.
-                 Por ahora uso un div gris de placeholder.
-             */}
-             {/* <Image src="/me.png" alt="Diego Valdez" fill className="object-cover" /> */}
-             
-             {/* Placeholder temporal hasta que pongas tu foto */}
-             <div className="w-full h-full flex items-center justify-center bg-linear-to-b from-gray-800 to-black">
-                <Code2 className="w-32 h-32 text-white/20" />
-             </div>
+             {profile?.photo_url ? (
+               <Image 
+                 src={profile.photo_url} 
+                 alt={`${profile.name} ${profile.last_name}`} 
+                 fill 
+                 className="object-cover"
+               />
+             ) : (
+               <div className="w-full h-full flex items-center justify-center bg-linear-to-b from-gray-800 to-black">
+                 <Code2 className="w-32 h-32 text-white/20" />
+               </div>
+             )}
           </div>
         </motion.div>
 

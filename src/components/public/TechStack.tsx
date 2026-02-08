@@ -1,65 +1,39 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { 
-  SiPython, SiFastapi, SiDotnet, SiNodedotjs,// Backend
-  SiReact, SiNextdotjs, SiTailwindcss, SiJavascript, SiTypescript, // Frontend
-  SiPostgresql, SiMysql, SiMongodb, SiSqlite, // Database
-  SiAmazon, SiDocker, SiGit, SiPostman, SiLinux, SiPandas // Tools
-} from "react-icons/si";
+import { usePublicTechnologies } from "@/hooks/usePublicTechnologies";
+import { usePortfolioContext } from "@/contexts/PortfolioContext";
 
-// ESTRUCTURA DE DATOS (Backend Ready)
-// En el futuro, esto vendrá de tu API: /technologies/grouped
-const TECH_CATEGORIES = [
-  {
-    id: "backend",
-    title: "Backend Core",
-    icon: <SiPython className="w-6 h-6" />, // Icono representativo de la categoría
-    skills: [
-      { name: "Python", icon: SiPython, color: "#3776AB" },
-      { name: "FastAPI", icon: SiFastapi, color: "#009688" },
-      { name: ".NET Core", icon: SiDotnet, color: "#512BD4" },
-      { name: "Node.js", icon: SiNodedotjs, color: "#339933" },
-    ]
-  },
-  {
-    id: "frontend",
-    title: "Frontend & UI",
-    icon: <SiReact className="w-6 h-6" />,
-    skills: [
-      { name: "Next.js", icon: SiNextdotjs, color: "#000000" }, // Next.js es negro/blanco
-      { name: "React", icon: SiReact, color: "#61DAFB" },
-      { name: "Tailwind", icon: SiTailwindcss, color: "#06B6D4" },
-      { name: "TypeScript", icon: SiTypescript, color: "#3178C6" },
-      { name: "JavaScript", icon: SiJavascript, color: "#F7DF1E" },
-    ]
-  },
-  {
-    id: "database",
-    title: "Data Persistence",
-    icon: <SiPostgresql className="w-6 h-6" />,
-    skills: [
-      { name: "PostgreSQL", icon: SiPostgresql, color: "#4169E1" },
-      { name: "MySQL", icon: SiMysql, color: "#4479A1" },
-      { name: "MongoDB", icon: SiMongodb, color: "#47A248" },
-      { name: "SQLite", icon: SiSqlite, color: "#003B57" },
-    ]
-  },
-  {
-    id: "tools",
-    title: "DevOps & Data",
-    icon: <SiDocker className="w-6 h-6" />,
-    skills: [
-      { name: "AWS", icon: SiAmazon, color: "#FF9900" },
-      { name: "Docker", icon: SiDocker, color: "#2496ED" },
-      { name: "Git", icon: SiGit, color: "#F05032" },
-      { name: "Pandas", icon: SiPandas, color: "#150458" }, // Data Science
-      { name: "Linux", icon: SiLinux, color: "#FCC624" },
-    ]
-  }
+const CATEGORY_META = [
+  { id: "backend", title: "Backend Core" },
+  { id: "frontend", title: "Frontend & UI" },
+  { id: "databases", title: "Data Persistence" },
+  { id: "apis", title: "APIs" },
+  { id: "dev_tools", title: "DevOps & Data" },
+  { id: "cloud", title: "Cloud" },
+  { id: "testing", title: "Testing" },
+  { id: "architecture", title: "Architecture" },
+  { id: "security", title: "Security" },
 ];
 
 export default function TechStack() {
+  const { username } = usePortfolioContext();
+  const { technologies, loading } = usePublicTechnologies(username);
+
+  const grouped = technologies.reduce<Record<string, typeof technologies>>((acc, tech) => {
+    const key = tech.category || "other";
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(tech);
+    return acc;
+  }, {});
+
+  const categories = [
+    ...CATEGORY_META.filter((category) => grouped[category.id]?.length),
+    ...Object.keys(grouped)
+      .filter((key) => !CATEGORY_META.some((category) => category.id === key))
+      .map((key) => ({ id: key, title: key.replace(/_/g, " ") }))
+  ];
+
   return (
     <section id="stack" className="py-24 px-4 relative">
       <div className="max-w-7xl mx-auto">
@@ -74,63 +48,79 @@ export default function TechStack() {
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
             Tech <span className="text-primary">Ecosystem</span>
           </h2>
-          <p className="text-muted text-lg">
-            Arquitectura tecnológica dividida por capas de especialización
-          </p>
         </motion.div>
 
         {/* Grid de Categorías */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {TECH_CATEGORIES.map((category, catIndex) => (
-            <motion.div
-              key={category.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: catIndex * 0.1 }}
-              // Estilo visual: "Caja de Cristal" distinta a las tarjetas de Clientes
-              className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-sm hover:border-primary/30 transition-all group"
-            >
-              {/* Título de Categoría con Icono */}
-              <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-4">
-                <span className="text-secondary p-2 bg-secondary/10 rounded-lg">
-                  {category.icon}
-                </span>
-                <h3 className="text-xl font-bold text-foreground">
-                  {category.title}
-                </h3>
-              </div>
+          {!loading && categories.length > 0 ? (
+            categories.map((category, catIndex) => {
+              const items = grouped[category.id] || [];
+              const headerIcon = items.find((tech) => tech.icon_url)?.icon_url;
 
-              {/* Grid de Iconos (Tecnologías) */}
-              <div className="flex flex-wrap gap-6 justify-center md:justify-start">
-                {category.skills.map((tech, techIndex) => (
-                  <div key={tech.name} className="relative group/icon flex flex-col items-center">
-                    
-                    {/* Contenedor del Icono (Círculo) */}
-                    <div 
-                      className="w-16 h-16 rounded-2xl bg-black/50 border border-white/5 flex items-center justify-center text-3xl text-gray-400 transition-all duration-300 group-hover/icon:scale-110 group-hover/icon:border-white/20 shadow-lg"
-                      style={{ 
-                        // Truco CSS: Usamos una variable para el color hover dinámico
-                        // @ts-ignore
-                        "--hover-color": tech.color 
-                      }}
-                    >
-                      {/* El icono en sí */}
-                      <tech.icon 
-                        className="transition-colors duration-300 group-hover/icon:text-(--hover-color)" 
-                      />
-                    </div>
-
-                    {/* Tooltip (Nombre) - Aparece abajo al hover */}
-                    <span className="absolute -bottom-8 opacity-0 group-hover/icon:opacity-100 transition-opacity text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded border border-primary/20 whitespace-nowrap">
-                      {tech.name}
+              return (
+                <motion.div
+                  key={category.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: catIndex * 0.1 }}
+                  // Estilo visual: "Caja de Cristal" distinta a las tarjetas de Clientes
+                  className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-sm hover:border-primary/30 transition-all group"
+                >
+                  {/* Título de Categoría con Icono */}
+                  <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-4">
+                    <span className="text-secondary p-2 bg-secondary/10 rounded-lg">
+                      {headerIcon ? (
+                        <img
+                          src={headerIcon}
+                          alt={category.title}
+                          className="w-6 h-6 object-contain"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span className="text-xs font-bold">
+                          {category.title.charAt(0)}
+                        </span>
+                      )}
                     </span>
-                    
+                    <h3 className="text-xl font-bold text-foreground">
+                      {category.title}
+                    </h3>
                   </div>
-                ))}
-              </div>
-            </motion.div>
-          ))}
+
+                  {/* Grid de Tecnologías */}
+                  <div className="flex flex-wrap gap-6 justify-center md:justify-start">
+                    {items.map((tech) => (
+                      <div key={tech.id} className="relative group/icon flex flex-col items-center">
+                        <div className="w-16 h-16 rounded-2xl bg-black/50 border border-white/5 flex items-center justify-center text-3xl text-gray-400 transition-all duration-300 group-hover/icon:scale-110 group-hover/icon:border-white/20 shadow-lg">
+                          {tech.icon_url ? (
+                            <img
+                              src={tech.icon_url}
+                              alt={tech.name}
+                              className="w-8 h-8 object-contain"
+                              loading="lazy"
+                            />
+                          ) : (
+                            <span className="text-sm font-semibold text-gray-400">
+                              {tech.name.charAt(0)}
+                            </span>
+                          )}
+                        </div>
+
+                        <span className="absolute -bottom-8 opacity-0 group-hover/icon:opacity-100 transition-opacity text-xs font-mono text-primary bg-primary/10 px-2 py-1 rounded border border-primary/20 whitespace-nowrap">
+                          {tech.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </motion.div>
+              );
+            })
+          ) : (
+            <div className="col-span-full text-center text-muted">
+              {loading ? "Loading technologies..." : "No technologies available"}
+            </div>
+          )}
         </div>
 
       </div>

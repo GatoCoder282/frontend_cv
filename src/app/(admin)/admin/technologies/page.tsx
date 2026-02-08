@@ -64,11 +64,13 @@ const emptyForm: TechnologyCreateRequest = {
 const categoryLabels: Record<TechnologyCategory, string> = {
 	[TechnologyCategory.FRONTEND]: "Frontend",
 	[TechnologyCategory.BACKEND]: "Backend",
-	[TechnologyCategory.DATABASE]: "Base de Datos",
-	[TechnologyCategory.DEVOPS]: "DevOps",
-	[TechnologyCategory.MOBILE]: "Mobile",
-	[TechnologyCategory.TOOL]: "Herramientas",
-	[TechnologyCategory.OTHER]: "Otro",
+	[TechnologyCategory.DATABASE]: "Bases de Datos",
+	[TechnologyCategory.APIS]: "APIs",
+	[TechnologyCategory.DEV_TOOLS]: "Herramientas de Desarrollo",
+	[TechnologyCategory.CLOUD]: "Cloud",
+	[TechnologyCategory.TESTING]: "Testing",
+	[TechnologyCategory.ARCHITECTURE]: "Arquitectura",
+	[TechnologyCategory.SECURITY]: "Seguridad",
 };
 
 const getCategoryColor = (category: TechnologyCategory) => {
@@ -79,13 +81,18 @@ const getCategoryColor = (category: TechnologyCategory) => {
 			return "primary";
 		case TechnologyCategory.DATABASE:
 			return "success";
-		case TechnologyCategory.DEVOPS:
-			return "warning";
-		case TechnologyCategory.MOBILE:
+		case TechnologyCategory.APIS:
 			return "secondary";
-		case TechnologyCategory.TOOL:
-			return "default";
-		case TechnologyCategory.OTHER:
+		case TechnologyCategory.DEV_TOOLS:
+			return "warning";
+		case TechnologyCategory.CLOUD:
+			return "error";
+		case TechnologyCategory.TESTING:
+			return "success";
+		case TechnologyCategory.ARCHITECTURE:
+			return "info";
+		case TechnologyCategory.SECURITY:
+			return "error";
 		default:
 			return "default";
 	}
@@ -693,49 +700,37 @@ export default function TechnologiesPage() {
 
 							<Divider />
 
-							<Stack spacing={1}>
-								<TextField
-									label="URL del icono"
-									value={form.icon_url}
-									onChange={(event) =>
-										handleChange("icon_url", event.target.value)
+							<Stack direction="row" spacing={2} alignItems="center">
+								<Button
+									variant="outlined"
+									component="label"
+									startIcon={
+										uploading ? <CircularProgress size={16} /> : <ImageIcon />
 									}
-									fullWidth
-									error={Boolean(iconUrlError)}
-									helperText={iconUrlError || "Opcional. https://..."}
-								/>
-								<Stack direction="row" spacing={2} alignItems="center">
-									<Button
-										variant="outlined"
-										component="label"
-										startIcon={
-											uploading ? <CircularProgress size={16} /> : <ImageIcon />
+									disabled={uploading}
+								>
+									{uploading ? "Subiendo..." : "Subir icono"}
+									<input
+										hidden
+										type="file"
+										accept="image/*"
+										onChange={(event) =>
+											handleUploadIcon(event.target.files?.[0])
 										}
-										disabled={uploading}
-									>
-										{uploading ? "Subiendo..." : "Subir icono"}
-										<input
-											hidden
-											type="file"
-											accept="image/*"
-											onChange={(event) =>
-												handleUploadIcon(event.target.files?.[0])
-											}
-										/>
-									</Button>
-									<Avatar
-										src={form.icon_url || undefined}
-										sx={{
-											width: 44,
-											height: 44,
-											bgcolor: "rgba(0, 229, 255, 0.1)",
-											color: "primary.main",
-											border: "1px solid rgba(0, 229, 255, 0.2)",
-										}}
-									>
-										<Code fontSize="small" />
-									</Avatar>
-								</Stack>
+									/>
+								</Button>
+								<Avatar
+									src={form.icon_url || undefined}
+									sx={{
+										width: 44,
+										height: 44,
+										bgcolor: "rgba(0, 229, 255, 0.1)",
+										color: "primary.main",
+										border: "1px solid rgba(0, 229, 255, 0.2)",
+									}}
+								>
+									<Code fontSize="small" />
+								</Avatar>
 							</Stack>
 						</Stack>
 					</Box>

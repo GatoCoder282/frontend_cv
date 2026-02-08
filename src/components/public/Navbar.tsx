@@ -4,17 +4,21 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { Menu, X, MessageSquare } from "lucide-react";
+import { usePortfolioContext } from "@/contexts/PortfolioContext";
+import { useProfile } from "@/hooks/useProfile";
 
 // Definimos los links de navegación (Asegúrate de que los IDs existan en tus secciones)
 const NAV_LINKS = [
-  { name: "Inicio", href: "/" },
-  { name: "Experiencia", href: "#experience" },
-  { name: "Proyectos", href: "#projects" },
+  { name: "Home", href: "/" },
+  { name: "Experience", href: "#experience" },
+  { name: "Projects", href: "#projects" },
   { name: "Stack", href: "#stack" },
-  { name: "Testimonios", href: "#clients" },
+  { name: "Testimonials", href: "#clients" },
 ];
 
 export default function Navbar() {
+  const { username } = usePortfolioContext();
+  const { profile } = useProfile(username);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -39,7 +43,8 @@ export default function Navbar() {
         
         {/* LOGO */}
         <Link href="/" className="text-xl font-bold tracking-tighter hover:scale-105 transition-transform">
-          DIEGO<span className="text-primary">VALDEZ</span>
+          {profile?.name || "DIEGO"}
+          <span className="text-primary">{profile?.last_name || "VALDEZ"}</span>
         </Link>
 
         {/* MENÚ DE ESCRITORIO */}
@@ -57,14 +62,14 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* BOTÓN CONTACTAR (Escritorio) */}
+        {/* CONTACT BUTTON (Desktop) */}
         <div className="hidden md:block">
           <Link
             href="#contact"
             className="px-5 py-2 text-sm font-medium bg-white/5 border border-white/10 rounded-full hover:bg-primary hover:border-primary transition-all hover:scale-105 active:scale-95 flex items-center gap-2"
           >
             <MessageSquare size={16} />
-            Contactar
+            Contact
           </Link>
         </div>
 
@@ -100,14 +105,14 @@ export default function Navbar() {
               
               <div className="h-px bg-white/10 my-2" />
 
-              {/* Botón de Contacto en Móvil */}
+              {/* Contact button on mobile */}
               <Link
                 href="#contact"
                 onClick={() => setMobileMenuOpen(false)}
                 className="flex items-center justify-center gap-2 px-4 py-3 text-lg font-bold bg-primary text-white rounded-xl hover:bg-primary-dark transition-all"
               >
                 <MessageSquare size={20} />
-                Hablemos
+                Let’s talk
               </Link>
             </nav>
           </motion.div>
