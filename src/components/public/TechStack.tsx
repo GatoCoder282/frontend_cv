@@ -8,7 +8,7 @@ const CATEGORY_META = [
   { id: "backend", title: "Backend Core" },
   { id: "frontend", title: "Frontend & UI" },
   { id: "databases", title: "Data Persistence" },
-  { id: "apis", title: "APIs" },
+  { id: "apis", title: "APIs & Comunication" },
   { id: "dev_tools", title: "DevOps & Data" },
   { id: "cloud", title: "Cloud" },
   { id: "testing", title: "Testing" },
