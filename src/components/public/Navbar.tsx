@@ -9,7 +9,7 @@ import { useProfile } from "@/hooks/useProfile";
 
 // Definimos los links de navegación (Asegúrate de que los IDs existan en tus secciones)
 const NAV_LINKS = [
-  { name: "Home", href: "/" },
+  { name: "Home", href: "#" },
   { name: "Experience", href: "#experience" },
   { name: "Projects", href: "#projects" },
   { name: "Stack", href: "#stack" },
