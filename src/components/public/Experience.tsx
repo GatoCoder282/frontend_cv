@@ -34,7 +34,7 @@ export default function Experience() {
           className="mb-16 text-center"
         >
           <h2 className="text-3xl md:text-5xl font-bold mb-4 text-foreground">
-            Experiencia <span className="text-primary">Profesional</span>
+            Professional <span className="text-primary">Experience</span>
           </h2>
           <div className="h-1 w-24 bg-linear-to-r from-primary to-secondary mx-auto rounded-full" />
         </motion.div>
@@ -44,19 +44,19 @@ export default function Experience() {
           
           {loading && (
             <div className="text-center text-muted py-12">
-              Cargando experiencia...
+              Loading experience...
             </div>
           )}
 
           {error && (
             <div className="text-center text-red-500 py-12">
-              Error al cargar la experiencia
+              Error loading experience
             </div>
           )}
 
           {!loading && !error && experiences.length === 0 && (
             <div className="text-center text-muted py-12">
-              No hay experiencia laboral disponible
+              No work experience available
             </div>
           )}
 
@@ -78,11 +78,11 @@ export default function Experience() {
                 <div className="min-w-37.5 pt-1">
                   <span className="flex items-center gap-2 text-sm font-semibold text-muted font-mono">
                     <Calendar className="w-4 h-4 text-secondary" />
-                    {new Date(job.start_date).toLocaleDateString('es-ES', { 
+                    {new Date(job.start_date).toLocaleDateString('en-US', { 
                       month: 'short', 
                       year: 'numeric' 
                     })}
-                    {job.end_date ? ` - ${new Date(job.end_date).toLocaleDateString('es-ES', { 
+                    {job.end_date ? ` - ${new Date(job.end_date).toLocaleDateString('en-US', { 
                       month: 'short', 
                       year: 'numeric' 
                     })}` : ' - Present'}
