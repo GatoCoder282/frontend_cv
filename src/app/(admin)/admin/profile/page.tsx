@@ -101,24 +101,26 @@ export default function ProfilePage() {
     setSuccess('');
 
     try {
+      // Normalizar payload: convertir strings vacíos a null para ambos casos (crear y actualizar)
+      const payload: ProfileCreateRequest | ProfileUpdateRequest = {
+        name: form.name,
+        last_name: form.last_name,
+        current_title: form.current_title || null,
+        bio_summary: form.bio_summary || null,
+        location: form.location || null,
+        phone: form.phone || null,
+        photo_url: form.photo_url || null,
+        profile: form.profile || null,
+        cv_url: form.cv_url || null,
+      };
+
       if (isNew) {
-        const created = await profileService.createProfile(form);
+        const created = await profileService.createProfile(payload as ProfileCreateRequest);
         setProfile(created);
         setIsNew(false);
         setSuccess('Perfil creado correctamente');
       } else {
-        const payload: ProfileUpdateRequest = {
-          name: form.name,
-          last_name: form.last_name,
-          current_title: form.current_title || null,
-          bio_summary: form.bio_summary || null,
-          location: form.location || null,
-          phone: form.phone || null,
-          photo_url: form.photo_url || null,
-          profile: form.profile || null,
-          cv_url: form.cv_url || null,
-        };
-        const updated = await profileService.updateMyProfile(payload);
+        const updated = await profileService.updateMyProfile(payload as ProfileUpdateRequest);
         setProfile(updated);
         setSuccess('Perfil actualizado correctamente');
       }
