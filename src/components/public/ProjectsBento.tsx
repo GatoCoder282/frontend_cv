@@ -1,7 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Github, ExternalLink, Folder } from "lucide-react";
+import { Github, ExternalLink, Folder, ArrowRight } from "lucide-react";
+import Link from "next/link";
 import { usePublicFeaturedProjects } from "@/hooks/usePublicProjects";
 import { usePortfolioContext } from "@/contexts/PortfolioContext";
 
@@ -88,7 +89,7 @@ export default function ProjectsBento() {
               </div>
 
               {/* Tags (Bottom) - Tecnologías del proyecto */}
-              <div className="relative z-10 mt-4">
+              <div className="relative z-10 mt-4 space-y-3">
                 {project.technologies && project.technologies.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {project.technologies.slice(0, 4).map((tech) => (
@@ -100,8 +101,15 @@ export default function ProjectsBento() {
                       <span className="text-xs font-mono text-muted px-2 py-1">+{project.technologies.length - 4} more</span>
                     )}
                   </div>
-                ) : null}
-              </div>
+                ) : null}                
+                {/* Botón Ver Detalles */}
+                <Link 
+                  href={`/${username}/projects/${project.id}`}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary/60 text-white font-medium rounded-full hover:bg-secondary/80 transition-all duration-300 hover:gap-3 group/link shadow-lg hover:shadow-xl"
+                >
+                  View Details
+                  <ArrowRight size={16} className="group-hover/link:translate-x-1 transition-transform" />
+                </Link></div>
             </motion.div>
             ))
           ) : (

@@ -1,5 +1,6 @@
 import { ProjectCategory } from './enums';
 import { TechnologyResponse } from './technology';
+import { WorkExperienceResponse } from './workExperience';
 
 // --- PROJECT PREVIEW DTOs ---
 
@@ -61,6 +62,7 @@ export interface ProjectResponse {
   repo_url: string | null;
   featured: boolean;
   work_experience_id: number | null;
+  work_experience?: WorkExperienceResponse | null; // Objeto completo (opcional, depende del endpoint)
   technologies: TechnologyResponse[];
   previews: ProjectPreviewResponse[];
 }
