@@ -30,7 +30,7 @@ export default function ProjectsBento() {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[300px]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[350px] md:auto-rows-[300px]">
           {!loading && projects.length > 0 ? (
             projects.map((project, index) => (
             <motion.div
